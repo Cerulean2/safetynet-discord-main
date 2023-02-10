@@ -7,7 +7,7 @@ from discord.ext import commands
 intents = discord.Intents.all()
 client = commands.Bot(command_prefix='!', intents=intents)
 client.owner_id = 856298738044895312
-client.remove_command('help')
+client.remove_command("help")
 load_dotenv()
 
 @client.event

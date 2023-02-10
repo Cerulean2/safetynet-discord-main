@@ -6,6 +6,11 @@ class ModerationCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    """
+    Bans a member
+
+    Usage: !ban @user <dateframe:1d,1h,1m,1s> <reason>
+    """
     @commands.command()
     @commands.has_permissions(ban_members=True)
     async def ban(self, ctx, member: discord.Member, duration: str, *, reason: str):
@@ -48,7 +53,17 @@ class ModerationCog(commands.Cog):
             )
             ban_embed.set_footer(text=f'ID: {member.id} | Timestamp: {datetime.datetime.now().strftime("%m/%d/%Y %I:%M %p")}')
             await ctx.send(embed=ban_embed)
-
+            embed = discord.Embed(title="Bban Log", description=f"{member.mention} has been **banned** by {ctx.author.mention}\n\nReason: `{reason}`\n\Banned from: `{ctx.guild.name}`", color=0x1355ed)
+            embed.add_field(name="User", value=f"{member}", inline=True)
+            embed.add_field(name="UserID", value=f"{member.id}", inline=True)
+            embed.add_field(name="Moderator", value=f"{ctx.author}", inline=True)
+            embed.set_footer(text=f"Ban log - Banned user: {member.name}")
+            embed.timestamp = datetime.datetime.utcnow()
+            logchannel = ctx.guild.get_channel(1073344165666115657)        
+            await logchannel.send(embed=embed)
+    """
+    Unbans a user, optional reason
+    """
     @commands.command()
     @commands.has_permissions(ban_members=True)
     async def unban(self,ctx, member:discord.User, *, reason=None):
@@ -70,6 +85,9 @@ class ModerationCog(commands.Cog):
         await ctx.message.delete()
         print(f"Sucsessfully unbanned {member.name}")
 
+    """
+    Errror handling for ban
+    """
     @ban.error
     async def on_application_command_error(self, ctx, error: discord.DiscordException):
         if isinstance(error, commands.MissingRequiredArgument):
@@ -82,12 +100,26 @@ class ModerationCog(commands.Cog):
         else:
             raise error  # Here we raise other errors to ensure they aren't ignored
 
+    """
+    Kicks a user, optional reason
+    """
     @commands.command()
     @commands.has_permissions(kick_members=True)
     async def kick(ctx, member: discord.Member, *, reason=None):
         await member.kick(reason=reason)
         await ctx.send(f'Kicked {member.mention} for {reason}')
+        embed = discord.Embed(title="Kick Log", description=f"{member.mention} has been **kicked** by {ctx.author.mention}\n\nReason: `{reason}`\n\Kicked from: `{ctx.guild.name}`", color=0x1355ed)
+        embed.add_field(name="User", value=f"{member}", inline=True)
+        embed.add_field(name="UserID", value=f"{member.id}", inline=True)
+        embed.add_field(name="Moderator", value=f"{ctx.author}", inline=True)
+        embed.set_footer(text=f"Kick log - Kicked user: {member.name}")
+        embed.timestamp = datetime.datetime.utcnow()
+        logchannel = ctx.guild.get_channel(1073344165666115657)        
+        await logchannel.send(embed=embed)
 
+    """
+    Errror handling for kick
+    """
     @kick.error
     async def on_application_command_error(ctx, error: discord.DiscordException):
         if isinstance(error, commands.MissingRequiredArgument):

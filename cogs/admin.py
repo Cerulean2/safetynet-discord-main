@@ -6,6 +6,9 @@ class AdminCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    """
+    Checks server for bad or unsafe permissions
+    """
     @commands.command()
     @commands.has_permissions(administrator=True)
     async def setup(self,message):
